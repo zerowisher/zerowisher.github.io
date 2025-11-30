@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未来都市个人主页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        future: {
+                            dark: '#0a0f1c',
+                            blue: '#165DFF',
+                            cyan: '#00E5FF',
+                            purple: '#9D4EDD',
+                            gold: '#FFD700',
+                            star: '#E6E6FA',
+                            game: '#FFD100',
+                        },
+                        aleph: {
+                            red: '#E53935',
+                            pale: '#00BCD4',
+                            dark: '#121212'
+                        },
+                        scp: {
+                            primary: '#000000',
+                            secondary: '#333333',
+                            accent: '#FF0000'
+                        },
+                        backroom: {
+                            yellow: '#F7D746',
+                            brown: '#8B4513',
+                            gray: '#696969'
+                        }
+                    },
+                    fontFamily: {
+                        future: ['Orbitron', 'sans-serif'],
+                        fantasy: ['Garamond', 'Georgia', 'serif'],
+                        aleph: ['"Courier New"', 'monospace'],
+                        scp: ['"Courier Prime"', 'monospace']
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow-glow {
+                text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+            }
+            .nav-glow {
+                box-shadow: 0 0 10px currentColor, 0 0 20px currentColor/50;
+            }
+            .content-glass {
+                background: rgba(10, 15, 28, 0.7);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .star-glass {
+                background: rgba(10, 15, 30, 0.6);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(220, 220, 255, 0.2);
+            }
+            .game-glass {
+                background: rgba(15, 10, 20, 0.75);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 209, 0, 0.3);
+            }
+            .aleph-card {
+                background: rgba(18, 18, 18, 0.9);
+                border: 2px solid #E53935;
+                box-shadow: 0 0 15px rgba(229, 57, 53, 0.5);
+            }
+            .aleph-label {
+                border: 1px solid #E53935;
+                background: rgba(229, 57, 53, 0.1);
+            }
+            .scp-container {
+                background: rgba(0, 0, 0, 0.85);
+                border: 1px solid #444444;
+            }
+            .backroom-container {
+                background: rgba(139, 69, 19, 0.8);
+                border: 1px solid #F7D746;
+            }
+        }
+        
+        /* 导入字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap');
+        
+        /* 动画定义 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 209, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 209, 0, 0.8); }
+        }
+        
+        @keyframes aleph-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(229, 57, 53, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(229, 57, 53, 0.8); }
+        }
+        
+        @keyframes scp-flicker {
+            0%, 100% { opacity: 1; }
+            45% { opacity: 0.9; }
+            50% { opacity: 0.8; }
+            55% { opacity: 0.9; }
+        }
+        
+        /* 基础样式 */
+        body {
+            overflow-x: hidden;
+            background-color: #0a0f1c;
+        }
+        
+        .section-content {
+            min-height: 100vh;
+            display: none;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .section-content.active {
+            display: block;
+        }
+        
+        /* 导航项动画 */
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            transform: translateX(-10px);
+        }
+        
+        /* 星星动画效果 */
+        .star-animation {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+        
+        /* 游戏卡片动画 */
+        .game-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            animation: glow 2s infinite ease-in-out;
+        }
+
+        /* 联系方式卡片动画 */
+        .contact-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            animation: aleph-glow 2s infinite ease-in-out;
+        }
+        
+        /* SCP文档样式 */
+        .scp-document {
+            font-family: 'Courier Prime', monospace;
+            line-height: 1.6;
+            animation: scp-flicker 10s infinite;
+        }
+        
+        .scp-header {
+            border-bottom: 2px solid #ff0000;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .scp-class {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .scp-class-safe {
+            background-color: #008000;
+            color: white;
+        }
+        
+        .scp-class-euclid {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .scp-class-keter {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body class="font-future text-white">
+    <!-- 主背景 -->
+    <div class="fixed inset-0 z-0" id="main-bg">
+        <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/fdd30da4d4f847fba5384785e4e868c5.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130184332B273323751A3C14CA36E&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765104213&x-signature=ywzBgX76DYvFTau%2FWvf1OwGqrMg%3D" 
+             alt="未来都市" 
+             class="w-full h-full object-cover">
+        <!-- 渐变遮罩，增强文字可读性 -->
+        <div class="absolute inset-0 bg-gradient-to-b from-future-dark/60 via-future-dark/40 to-future-dark/80"></div>
+    </div>
+    
+    <!-- 个人信息背景 -->
+    <div class="fixed inset-0 z-0" id="personal-bg" style="display: none;">
+        <img src="https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/8895946b3c6349ee8959112eb86c4b08.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130185557B2E797213E85671CA4C6&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765104958&x-signature=YK2Hf%2Bgdk%2FpUk%2BD4Dtc9He02IyQ%3D" 
+             alt="星空背景" 
+             class="w-full h-full object-cover">
+        <!-- 渐变遮罩，增强文字可读性 -->
+        <div class="absolute inset-0 bg-gradient-to-b from-future-dark/70 via-future-dark/50 to-future-dark/80"></div>
+    </div>
+    
+    <!-- 游戏页面背景 -->
+    <div class="fixed inset-0 z-0" id="games-bg" style="display: none;">
+        <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/3d98164a06654c6abc399ab90d95d1f0.png~tplv-a9rns2rl98-24:720:720.png?rcl=202511301905405DA39C07682ED15BC3DA&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765105540&x-signature=r2zW8kwf5G5lW3cbWboCzuGbado%3D" 
+             alt="游戏主题背景" 
+             class="w-full h-full object-cover">
+        <!-- 渐变遮罩，增强文字可读性 -->
+        <div class="absolute inset-0 bg-gradient-to-b from-future-dark/80 via-future-dark/60 to-future-dark/90"></div>
+    </div>
+
+    <!-- 小说页面背景 -->
+    <div class="fixed inset-0 z-0" id="novels-bg" style="display: none;">
+        <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/e2f26258e3a2421b97c13eb770811403.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130200045D3789CE2742654451EB6&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765108845&x-signature=l%2FlTV0FcsLr0NGY0mB0PzM%2B0tmk%3D" 
+             alt="小说主题背景" 
+             class="w-full h-full object-cover">
+        <!-- 渐变遮罩，增强文字可读性 -->
+        <div class="absolute inset-0 bg-gradient-to-b from-future-dark/80 via-future-dark/60 to-future-dark/90"></div>
+    </div>
+
+    <!-- 联系方式页面背景（第二张图片） -->
+    <div class="fixed inset-0 z-0" id="contact-bg" style="display: none;">
+        <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/b9d2224a0aac4b91a4aa5bcc520340be.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130200045D3789CE2742654451EB6&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765108845&x-signature=SqTm4eTFoVf9xqthP68p5PwV43U%3D" 
+             alt="SCP基金会背景" 
+             class="w-full h-full object-cover">
+        <!-- 渐变遮罩，增强文字可读性 -->
+        <div class="absolute inset-0 bg-gradient-to-b from-aleph-dark/90 via-aleph-dark/80 to-aleph-dark/95"></div>
+    </div>
+    
+    <!-- 主标题区域 -->
+    <div id="home" class="section-content active relative z-10 flex flex-col justify-center items-center h-screen text-center px-4">
+        <h1 class="text-[clamp(2.5rem,8vw,5rem)] font-bold text-white text-shadow-glow mb-6 animate-pulse">
+            未来都市日志
+        </h1>
+        <p class="text-[clamp(1rem,3vw,1.5rem)] text-gray-200 max-w-2xl mb-12">
+            探索数字世界中的个人空间，记录游戏体验、阅读感悟与联系方式
+        </p>
+        <div class="animate-bounce">
+            <i class="fa fa-angle-down text-3xl text-future-cyan"></i>
+        </div>
+    </div>
+    
+    <!-- 个人信息页面（头像为第三张图片） -->
+    <div id="personal-info" class="section-content relative z-10">
+        <div class="max-w-5xl mx-auto relative z-10">
+            <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-future-star text-shadow-glow mb-8">个人信息</h2>
+            
+            <div class="star-glass rounded-xl p-6 md:p-8 shadow-xl transform transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,220,255,0.3)]">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/3 flex justify-center">
+                        <div class="relative">
+                            <!-- 头像为第三张图片 -->
+                            <div class="w-64 h-64 rounded-full overflow-hidden border-4 border-future-star/50 shadow-lg">
+                                <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/c638deae15904a5b8fb16756bd861067.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130200045D3789CE2742654451EB6&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765108845&x-signature=MYxBtpSid9KrFgiwq4CPOsUkq0o%3D" 
+                                     alt="个人头像" 
+                                     class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 bg-future-blue rounded-full w-16 h-16 flex items-center justify-center border-4 border-future-dark">
+                                <i class="fa fa-user text-2xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-2/3">
+                        <h3 class="text-2xl font-semibold mb-6 text-future-star font-fantasy">星空下的探索者</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="min-w-10 mt-1 text-future-star">
+                                    <i class="fa fa-id-card"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-300 text-sm">姓名</h4>
+                                    <p class="text-lg">董行锟</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="min-w-10 mt-1 text-future-star">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-300 text-sm">出生日期</h4>
+                                    <p class="text-lg">2007年4月24日</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="min-w-10 mt-1 text-future-star">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-300 text-sm">所在学校</h4>
+                                    <p class="text-lg">华中科技大学</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="min-w-10 mt-1 text-future-star">
+                                    <i class="fa fa-map-marker"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-300 text-sm">地址</h4>
+                                    <p class="text-lg">真识密林</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="min-w-10 mt-1 text-future-star">
+                                    <i class="fa fa-heart"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-300 text-sm">兴趣爱好</h4>
+                                    <p class="text-lg">游戏、小说、SCP基金会、Backrooms</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 喜欢玩的游戏页面 -->
+    <div id="games" class="section-content relative z-10">
+        <div class="max-w-6xl mx-auto relative z-10">
+            <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-future-game text-shadow-glow mb-8">喜欢玩的游戏</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- 游戏卡片1：明日方舟 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://arknights.jp/fankit/images/top_banner.png" alt="明日方舟" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">明日方舟</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">策略</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">一款战术策略类塔防游戏，玩家需要培养不同职业的干员来抵御敌人的进攻。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.8/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 65小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片2：明日方舟：终末地 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://www.arknightsendfield.com/images/banner.png" alt="明日方舟：终末地" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">明日方舟：终末地</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">RPG</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">明日方舟系列的开放世界RPG作品，探索未知的星球与神秘的遗迹。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.9/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 42小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片3：王者荣耀 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://pvp.qq.com/web201605/splash/16011_1.jpg" alt="王者荣耀" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">王者荣耀</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">MOBA</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">多人在线战斗竞技游戏，5v5团队对战，选择不同英雄进行策略配合。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.5/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 68小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片4：我的世界 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://minecraft.net/zh-hans/article/snowy-peaks-and-craggy-cliffs/images/header.jpg" alt="我的世界" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">我的世界</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">沙盒</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">开放世界沙盒游戏，玩家可以自由建造、探索和冒险，发挥无限创造力。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.9/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 62小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片5：崩坏：星穹铁道 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://wiki.biligame.com/sr/images/thumb/4/40/%E7%89%88%E6%9C%AC%E5%A3%81%E7%BA%B8_%E7%8B%BC%E5%A3%AB%E4%B9%8B%E6%98%9F.png/1200px-%E7%89%88%E6%9C%AC%E5%A3%81%E7%BA%B8_%E7%8B%BC%E5%A3%AB%E4%B9%8B%E6%98%9F.png" alt="崩坏：星穹铁道" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">崩坏：星穹铁道</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">RPG</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">回合制角色扮演游戏，乘坐星穹列车穿越不同世界，与伙伴一起冒险。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.7/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 55小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片6：饥荒 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://klei.com/sites/default/files/styles/featured_image/public/2020-02/dont_starve_together_banner.jpg" alt="饥荒" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">饥荒</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">生存</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">生存冒险游戏，在充满奇幻元素的世界中收集资源、制作工具、对抗怪物。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.6/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 38小时</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 游戏卡片7：脑叶公司 -->
+                <div class="game-card game-glass rounded-xl overflow-hidden shadow-xl">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://projectmoon.kr/wp-content/uploads/2021/06/LC_NewBanner.jpg" alt="脑叶公司" class="w-full h-full object-cover transition-transform hover:scale-110 duration-700">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-future-game">脑叶公司</h3>
+                            <span class="bg-future-game/20 text-future-game px-2 py-1 rounded text-sm">管理</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">异常管理模拟游戏，玩家需要管理各种超自然生物，维持公司正常运转。</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa fa-star text-future-game mr-1"></i>
+                                <span>4.8/5</span>
+                            </div>
+                            <span class="text-sm text-gray-400">已玩时长: 45小时</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 小说推荐页面（添加SCP基金会和Backrooms内容） -->
+    <div id="novels" class="section-content relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-future-gold text-shadow-glow mb-8">小说与异常档案</h2>
+            
+            <div class="space-y-10">
+                <!-- 常规小说部分 -->
+                <div>
+                    <h3 class="text-2xl font-semibold text-future-gold mb-6 border-b border-future-gold/30 pb-2">推荐小说</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- 小说1：诸神愚戏 -->
+                        <div class="content-glass rounded-xl overflow-hidden shadow-xl flex flex-col md:flex-row">
+                            <div class="md:w-1/4">
+                                <img src="https://shturl.cc/fd7cae9cc14ae3574f7a4d866b8215de" alt="诸神愚戏封面" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-3/4 p-6 md:p-8">
+                                <div class="flex flex-wrap justify-between items-start gap-4 mb-4">
+                                    <h3 class="text-2xl font-semibold text-future-gold">诸神愚戏</h3>
+                                    <div class="flex gap-2">
+                                        <span class="bg-future-gold/20 text-future-gold px-2 py-1 rounded text-sm">无限流</span>
+                                        <span class="bg-future-gold/20 text-future-gold px-2 py-1 rounded text-sm">克苏鲁</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-300 mb-4">
+                                    主角以赌徒骗子的身份，在神明编织的“游戏”中挣扎求生。融合了傀儡线、时间轮回、神明博弈等元素，以诡谲的世界观展现人性与神性的对抗。
+                                </p>
+                                <div class="flex flex-wrap gap-6 mt-4">
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">作者</h4>
+                                        <p>未知（网络作者）</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">连载平台</h4>
+                                        <p>番茄小说</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">评分</h4>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-star text-future-gold mr-1"></i>
+                                            <span>9.1/10</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">推荐理由</h4>
+                                        <p>克苏鲁风格的悬疑博弈</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 小说2：轮回乐园 -->
+                        <div class="content-glass rounded-xl overflow-hidden shadow-xl flex flex-col md:flex-row">
+                            <div class="md:w-1/4">
+                                <img src="https://m.mx-fm.com/mffm/109026.html" alt="轮回乐园封面" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-3/4 p-6 md:p-8">
+                                <div class="flex flex-wrap justify-between items-start gap-4 mb-4">
+                                    <h3 class="text-2xl font-semibold text-future-gold">轮回乐园</h3>
+                                    <div class="flex gap-2">
+                                        <span class="bg-future-gold/20 text-future-gold px-2 py-1 rounded text-sm">都市</span>
+                                        <span class="bg-future-gold/20 text-future-gold px-2 py-1 rounded text-sm">冒险</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-300 mb-4">
+                                    苏晓被“轮回乐园”选中成为猎杀者，在危险与机遇并存的任务世界中与所有人为敌。以残酷的生存法则，展现了“力量即正义”的暗黑世界观。
+                                </p>
+                                <div class="flex flex-wrap gap-6 mt-4">
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">作者</h4>
+                                        <p>SL殇泪</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">出版年份</h4>
+                                        <p>2020年</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">评分</h4>
+                                        <div class="flex items-center">
+                                            <i class="fa fa-star text-future-gold mr-1"></i>
+                                            <span>8.9/10</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-gray-400 text-sm">推荐理由</h4>
+                                        <p>暗黑风格的冒险生存</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SCP基金会部分 -->
+                <div>
+                    <h3 class="text-2xl font-semibold text-scp-accent mb-6 border-b border-scp-accent/30 pb-2 flex items-center">
+                        <i class="fa fa-shield mr-2"></i>SCP基金会文档
+                    </h3>
+                    
+                    <div class="scp-container rounded-xl p-6 md:p-8 shadow-xl text-white scp-document mb-8">
+                        <div class="scp-header">
+                            <h3 class="text-xl font-bold mb-2">项目编号：SCP-173</h3>
+                            <div>
+                                <span class="scp-class scp-class-euclid">EUCLID</span>
+                                <span>项目名称：雕塑 - 最初之作</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="font-bold text-scp-accent">特殊收容措施：</h4>
+                            <p>SCP-173应被收容在一个上锁的容纳室内。当人员进入SCP-173的容纳室时，不得少于三人，并且进入后必须锁好门。在工作完成、重新上锁前，至少须有两人全程与SCP-173保持眼神接触。</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold text-scp-accent">描述：</h4>
+                            <p>SCP-173是一个由混凝土和钢筋组成的雕塑，带有Krylon牌喷漆的痕迹。SCP-173是可移动的，并且具有高度敌意。</p>
+                            <p>当没有直接目视观察时，SCP-173将移动至最近的生命体处并扭断其颈部。SCP-173在被观察时无法移动。与SCP-173互动时，人员必须保持eye contact，眨眼也被视为暂时中断观察。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scp-container rounded-xl p-6 md:p-8 shadow-xl text-white scp-document">
+                        <div class="scp-header">
+                            <h3 class="text-xl font-bold mb-2">项目编号：SCP-096</h3>
+                            <div>
+                                <span class="scp-class scp-class-keter">KETER</span>
+                                <span>项目名称：羞涩的人</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="font-bold text-scp-accent">特殊收容措施：</h4>
+                            <p>SCP-096应被收容在一个5m x 5m x 5m的钢制立方体容器中，容器内壁全部覆盖隔音材料。每周仅允许一次清洁和检查，需由至少三名D级人员执行。</p>
+                            <p>任何情况下，不得观看SCP-096的面部，包括照片、视频或绘画。违反此规定将导致立即启动收容失效预案。</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold text-scp-accent">描述：</h4>
+                            <p>SCP-096是一个约2.38米高的类人生物，其身体比例与人类相似，但躯干和四肢异常细长。SCP-096的皮肤完全缺乏色素，且没有任何毛发。</p>
+                            <p>当任何个体观察到SCP-096的面部时，SCP-096将进入极度愤怒状态，冲破任何阻碍，以极快速度到达该个体所在地并将其杀死。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backrooms部分 -->
+                <div>
+                    <h3 class="text-2xl font-semibold text-backroom-yellow mb-6 border-b border-backroom-yellow/30 pb-2 flex items-center">
+                        <i class="fa fa-map-signs mr-2"></i>Backrooms 层级档案
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="backroom-container rounded-xl p-6 shadow-xl text-white">
+                            <h3 class="text-xl font-bold mb-3 text-backroom-yellow">Level 0 - "初始密室"</h3>
+                            <div class="mb-3">
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm mr-2">安全</span>
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm">稳定</span>
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm">极少实体</span>
+                            </div>
+                            <p class="mb-3">Level 0是Backrooms的第一个层级，表现为一个无限延伸的非欧几里得空间，全部由潮湿的黄色地毯、发黄的墙纸和荧光灯组成。</p>
+                            <p>荧光灯发出恒定的低沉嗡嗡声，偶尔会闪烁或熄灭。空气中弥漫着潮湿的霉味和旧地毯的气味。此层级中没有明显的热源或冷源，温度保持在约20°C。</p>
+                        </div>
+                        
+                        <div class="backroom-container rounded-xl p-6 shadow-xl text-white">
+                            <h3 class="text-xl font-bold mb-3 text-backroom-yellow">Level 1 - "废弃办公区"</h3>
+                            <div class="mb-3">
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm mr-2">安全</span>
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm">稳定</span>
+                                <span class="bg-backroom-yellow/20 text-backroom-yellow px-2 py-1 rounded text-sm">少量实体</span>
+                            </div>
+                            <p class="mb-3">Level 1表现为一个无限延伸的工业管道和混凝土构成的办公区，类似于20世纪80年代的工厂或仓库。</p>
+                            <p>此层级有正常的重力和稳定的环境，温度维持在15-24°C之间。存在正常的电力供应，但大部分灯光忽明忽暗。Level 1中有可用的淡水和食物，但需谨慎寻找。</p>
+                        </div>
+                        
+                        <div class="backroom-container rounded-xl p-6 shadow-xl text-white">
+                            <h3 class="text-xl font-bold mb-3 text-backroom-yellow">Level 2 - "管道迷宫"</h3>
+                            <div class="mb-3">
+                                <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm mr-2">不安全</span>
+                                <span class="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded text-sm">不稳定</span>
+                                <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm">多实体</span>
+                            </div>
+                            <p class="mb-3">Level 2是一个由金属管道、通风口和狭窄通道组成的复杂网络，整体环境潮湿而闷热。</p>
+                            <p>此层级温度通常在30-40°C之间，湿度极高，且存在大量有害气体。Level 2中实体数量众多，包括"猎犬"和"死亡飞蛾"，极不适合长时间停留。</p>
+                        </div>
+                        
+                        <div class="backroom-container rounded-xl p-6 shadow-xl text-white">
+                            <h3 class="text-xl font-bold mb-3 text-backroom-yellow">Level 3 - "发电站"</h3>
+                            <div class="mb-3">
+                                <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm mr-2">危险</span>
+                                <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm">极不稳定</span>
+                                <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm">极多实体</span>
+                            </div>
+                            <p class="mb-3">Level 3表现为一个巨大的、破败的发电站或工业设施，充斥着高温、高压电线和机械装置。</p>
+                            <p>此层级存在极高的电压风险，温度可达50°C以上，并存在大量敌意实体。未经充分准备，绝对不建议进入Level 3。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 联系方式页面（添加第一张图片logo在下方） -->
+    <div id="contact" class="section-content relative z-10 font-aleph">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-aleph-red text-shadow-glow mb-8">联系方式（异想体格式）</h2>
+            
+            <!-- 联系方式卡片（模仿白夜信息格式） -->
+            <div class="aleph-card rounded-xl p-6 md:p-8 shadow-xl contact-card mb-12">
+                <!-- 标题栏 -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="text-aleph-red font-bold text-xl">联系方式信息</div>
+                    <div class="aleph-label px-3 py-1 rounded text-aleph-red font-bold">ALeph</div>
+                </div>
+
+                <!-- 基础信息 -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- 电话 -->
+                    <div class="border border-aleph-red/30 p-4 rounded">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-phone text-aleph-red mr-2"></i>
+                            <span class="text-aleph-red font-bold">电话</span>
+                        </div>
+                        <div class="text-white text-lg">15629683098</div>
+                    </div>
+
+                    <!-- 邮箱 -->
+                    <div class="border border-aleph-red/30 p-4 rounded">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-envelope text-aleph-red mr-2"></i>
+                            <span class="text-aleph-red font-bold">邮箱</span>
+                        </div>
+                        <div class="text-white text-lg">3547373452@qq.com</div>
+                    </div>
+
+                    <!-- Steam账号 -->
+                    <div class="border border-aleph-red/30 p-4 rounded">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-steam text-aleph-red mr-2"></i>
+                            <span class="text-aleph-red font-bold">Steam账号</span>
+                        </div>
+                        <div class="text-white text-lg">折影沐月</div>
+                    </div>
+
+                    <!-- GitHub账号 -->
+                    <div class="border border-aleph-red/30 p-4 rounded">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-github text-aleph-red mr-2"></i>
+                            <span class="text-aleph-red font-bold">GitHub账号</span>
+                        </div>
+                        <div class="text-white text-lg">zerowisher</div>
+                    </div>
+                </div>
+
+                <!-- 交互提示 -->
+                <div class="border-t border-aleph-red/30 pt-4 text-center text-aleph-red/80">
+                    <p>【警告】：该联系方式为安全交互渠道，请勿用于异常信息传递</p>
+                </div>
+            </div>
+            
+            <!-- 添加第一张图片的logo -->
+            <div class="flex flex-col items-center justify-center mt-10 p-6 bg-aleph-dark/50 rounded-xl border border-aleph-red/20">
+                <div class="w-full max-w-md mb-4">
+                    <img src="https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/c10f8a70260e49ba8329bbbba9eb4cbd.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251130195323D6483FECFDB6759498F1&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1765108403&x-signature=8Wu4M6ToFKzQSS%2B80ZdmvtJ%2Bz80%3D" 
+                         alt="白夜标识" 
+                         class="w-full h-auto rounded-lg shadow-lg">
+                </div>
+                <div class="text-center">
+                    <p class="text-aleph-red/90 font-bold">T-03-46 "白夜"</p>
+                    <p class="text-gray-400 text-sm mt-2">异想体收容编号：ALeph级</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <!-- 右侧导航 -->
+    <div class="fixed right-6 top-1/2 transform -translate-y-1/2 z-20 flex flex-col gap-6">
+        <div class="nav-item group" data-target="personal-info">
+            <div class="w-14 h-14 rounded-full bg-future-dark border-2 border-future-cyan text-future-cyan flex items-center justify-center cursor-pointer nav-glow">
+                <i class="fa fa-user text-xl"></i>
+            </div>
+            <div class="absolute right-20 top-0 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-future-dark px-4 py-2 rounded-lg border border-future-cyan/30">
+                个人信息
+            </div>
+        </div>
+        
+        <div class="nav-item group" data-target="games">
+            <div class="w-14 h-14 rounded-full bg-future-dark border-2 border-future-game text-future-game flex items-center justify-center cursor-pointer nav-glow">
+                <i class="fa fa-gamepad text-xl"></i>
+            </div>
+            <div class="absolute right-20 top-0 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-future-dark px-4 py-2 rounded-lg border border-future-game/30">
+                喜欢玩的游戏
+            </div>
+        </div>
+        
+        <div class="nav-item group" data-target="novels">
+            <div class="w-14 h-14 rounded-full bg-future-dark border-2 border-future-gold text-future-gold flex items-center justify-center cursor-pointer nav-glow">
+                <i class="fa fa-book text-xl"></i>
+            </div>
+            <div class="absolute right-20 top-0 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-future-dark px-4 py-2 rounded-lg border border-future-gold/30">
+                小说与异常档案
+            </div>
+        </div>
+        
+        <div class="nav-item group" data-target="contact">
+            <div class="w-14 h-14 rounded-full bg-future-dark border-2 border-aleph-red text-aleph-red flex items-center justify-center cursor-pointer nav-glow">
+                <i class="fa fa-envelope text-xl"></i>
+            </div>
+            <div class="absolute right-20 top-0 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-future-dark px-4 py-2 rounded-lg border border-aleph-red/30">
+                联系方式
+            </div>
+        </div>
+        
+        <!-- 返回主页按钮 -->
+        <div class="nav-item" data-target="home">
+            <div class="w-12 h-12 rounded-full bg-future-dark border-2 border-white/50 text-white flex items-center justify-center cursor-pointer hover:border-white hover:text-white transition">
+                <i class="fa fa-home"></i>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 导航功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const backgrounds = {
+                main: document.getElementById('main-bg'),
+                personal: document.getElementById('personal-bg'),
+                games: document.getElementById('games-bg'),
+                novels: document.getElementById('novels-bg'),
+                contact: document.getElementById('contact-bg')
+            };
+            
+            // 初始化 - 只显示主背景
+            Object.values(backgrounds).forEach(bg => {
+                bg.style.display = 'none';
+            });
+            backgrounds.main.style.display = 'block';
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // 隐藏所有区域
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // 显示目标区域
+                    document.getElementById(targetId).classList.add('active');
+                    
+                    // 隐藏所有背景
+                    Object.values(backgrounds).forEach(bg => {
+                        bg.style.display = 'none';
+                    });
+                    
+                    // 根据目标页面显示对应的背景
+                    switch(targetId) {
+                        case 'personal-info':
+                            backgrounds.personal.style.display = 'block';
+                            break;
+                        case 'games':
+                            backgrounds.games.style.display = 'block';
+                            break;
+                        case 'novels':
+                            backgrounds.novels.style.display = 'block';
+                            break;
+                        case 'contact':
+                            backgrounds.contact.style.display = 'block';
+                            break;
+                        default:
+                            backgrounds.main.style.display = 'block';
+                    }
+                    
+                    // 滚动到顶部
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // 为导航项添加位置计算，确保提示文本显示正确
+            const navItemsArray = Array.from(navItems);
+            navItemsArray.forEach((item, index) => {
+                const tooltip = item.querySelector('div:nth-child(2)');
+                if (tooltip) {
+                    const itemTop = item.offsetTop;
+                    const itemHeight = item.offsetHeight;
+                    tooltip.style.top = `${itemTop + itemHeight/2 - tooltip.offsetHeight/2}px`;
+                }
+            });
+            
+            // 为个人信息页面添加动态星星效果
+            function createStars() {
+                const personalInfoSection = document.getElementById('personal-info');
+                if (!personalInfoSection) return;
+                
+                // 清除已有的星星
+                document.querySelectorAll('.star-animation').forEach(star => star.remove());
+                
+                // 只在个人信息页面可见时添加星星
+                if (personalInfoSection.classList.contains('active')) {
+                    const starCount = 50;
+                    for (let i = 0; i < starCount; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('star-animation');
+                        
+                        // 随机位置和大小
+                        const x = Math.random() * 100;
+                        const y = Math.random() * 100;
+                        const size = Math.random() * 3 + 1;
+                        const delay = Math.random() * 3;
+                        
+                        star.style.left = `${x}%`;
+                        star.style.top = `${y}%`;
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        star.style.animationDelay = `${delay}s`;
+                        
+                        personalInfoSection.appendChild(star);
+                    }
+                }
+            }
+            
+            // 初始创建星星
+            createStars();
+            
+            // 监听页面切换事件，更新星星效果
+            navItems.forEach(item => {
+                item.addEventListener('click', createStars);
+            });
+        });
+    </script>
+</body>
+</html>
